@@ -27,7 +27,7 @@ export default function Home() {
         }, {} as Record<string, string>)
       ).toString();
 
-      const res = await fetch(`https://task-by-cyber-mind-works.vercel.app/api/data?${queryParams}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/data?${queryParams}`);
       if (!res.ok) {
         throw new Error("Network response was not ok");
       }
