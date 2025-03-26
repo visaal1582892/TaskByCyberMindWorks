@@ -5,7 +5,7 @@ import { JobPost } from "@/lib/types";
 import CustomDropdown from "./CustomDropdown";
 
 async function createJob(jobData: JobPost) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/data`, {
+  const response = await fetch(`https://vercel.com/api/data`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(jobData),
