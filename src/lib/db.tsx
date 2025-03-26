@@ -1,46 +1,48 @@
-import { Pool } from 'pg';
+import {Pool} from "pg";
 
-// Log the DATABASE_URL for debugging (remove in production!)
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
-// Create a new Pool instance for PostgreSQL connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Ensure this env var is set both locally (.env.local) and on Vercel
-  ssl: {
-    // This is required for Neon or any managed PostgreSQL service that mandates SSL
-    rejectUnauthorized: false,
-  },
-  max: 10, // Maximum number of connections (adjust as needed)
-});
+    connectionString: process.env.DATABASE_URL,
+})
 
-// Optional: Test the connection with a simple query (for debugging)
-(async () => {
-  try {
+export async function query<T>(text:string, params?: any[]):Promise<T[]> {
     const client = await pool.connect();
-    const testResult = await client.query("SELECT NOW()", []);
-    console.log("DB Connection Test Successful, current time:", testResult.rows);
-    client.release();
-  } catch (error) {
-    console.error("DB Connection Test Error:", error);
-  }
-})();
 
-/**
- * Executes a SQL query using the PostgreSQL pool.
- * @param sql - The SQL query to execute.
- * @param params - The parameters for the SQL query.
- * @returns A promise that resolves with the query result rows.
- */
-export async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-  try {
-    console.log("Executing SQL:", sql, "with params:", params);
-    const client = await pool.connect();
-    const result = await client.query(sql, params);
-    client.release();
-    console.log("Query result:", result.rows);
-    return result.rows;
-  } catch (error: any) {
-    console.error("❌ Database Query Error:", error);
-    throw error;
-  }
+    try{
+        const res = await client.query(text, params);
+        return res.rows;
+    }finally{
+        client.release();
+    }
 }
+
+
+
+// INSERT INTO companies (company_Name)
+// VALUES ('Google');
+
+// ALTER TABLE locations
+// ADD COLUMN company_ID INT REFERENCES companies(company_ID) ON DELETE CASCADE;
+
+// SELECT * from companies;
+// select * from locations;
+// INSERT INTO locations (company_ID, city)
+// VALUES (1,'chennai');
+
+
+// ALTER TABLE jobs
+// ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+// ALTER TABLE jobs
+// ADD COLUMN salary_max INT check (salary_max > salary_min);
+
+
+// INSERT INTO jobs 
+// (job_Title, company_ID, job_Type, salary, location_ID, job_Description, application_Deadline, requirements, responsibilities)
+// VALUES
+// ('Software Engineere', 1, 'Full-time', 1000000, 1, 'We are hiring for software engineere Intern role', '2025-05-15', 'Job requirements are familiar with Java and worked with any backend technologies', 'Your role is to develop and deploy applications and websites')
+
+// UPDATE jobs
+// set salary_min = 800000, salary_max = 1000000
+// where job_id = 1;
+
+// SELECT * FROM jobs;
