@@ -6,6 +6,7 @@ const pool = new Pool({
 
 export async function query<T>(text:string, params?: any[]):Promise<T[]> {
     const client = await pool.connect();
+    console.log(client);
 
     try{
         const res = await client.query(text, params);
